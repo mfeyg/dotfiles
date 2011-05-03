@@ -1,6 +1,6 @@
 color status green default
 
-set from      = "mfeygelson@gmail.com"
+set from      = "from-address"
 set sendmail  = "/usr/bin/msmtp -a gmail"
 set mbox      = "+gmail/archive"
 unset record
