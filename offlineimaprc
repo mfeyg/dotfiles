@@ -1,0 +1,41 @@
+[general]
+
+ui = TTY.TTYUI
+accounts = gmail, imap, account3
+
+[Account account]
+localrepository = account-local
+remoterepository = account-remote
+
+[Repository account-local]
+type = Maildir
+localfolders = ~/Mail/account
+
+[Repository imap-remote]
+type = IMAP
+remotehost = mail.host.com
+ssl = yes
+remoteuser = username
+remotepass = password
+
+[Repository gmail-remote]
+type = Gmail
+remoteuser = username@gmail.com
+remotepass = password
+realdelete = no
+nametrans = lambda folder: re.sub('.*Spam$', 'spam', 
+    re.sub('.*Drafts$', 'drafts', 
+    re.sub('.*Sent Mail$', 'sent', 
+    re.sub('.*Starred$', 'flagged', 
+    re.sub('.*Trash$', 'trash', 
+    re.sub('.*All Mail$', 'archive', folder))))))
+
+[mbnames]
+enabled = yes
+filename = ~/.mutt/muttrc.mailboxes
+header = "mailboxes "
+peritem = "+%(accountname)s/%(foldername)s"
+sep = " "
+footer = "\n"
+
+# vim: ft=cfg tw=0

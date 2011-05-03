@@ -1,0 +1,28 @@
+set header_cache        = ~/.mutt/cache/headers                 # where to store headers        
+set message_cachedir    = ~/.mutt/cache/bodies                  # where to store bodies
+set certificate_file    = ~/.mutt/certificates                  # where to store certs
+set mailcap_path	= ~/.mutt/mailcap
+set tmpdir              = ~/.mutt/temp                          # where to keep temp files
+set editor              = "/usr/bin/vim +/^$"                   # use vim and skip to first blank line
+
+# main options
+set mbox_type           = Maildir                               # mailbox type
+set folder              = ~/Mail                                # mailbox location
+set spoolfile           = "+gmail/INBOX"                        # GMail is default inbox
+set timeout             = 3                                     # idle time before scanning
+set mail_check          = 0                                     # minimum time between scans
+
+set realname		= "Mendel Feygelson"
+
+source ~/.mutt/muttrc.mailboxes
+source ~/.mutt/gmail.muttrc
+
+# Repeat for each mailbox:
+folder-hook gmail/* source ~/.mutt/gmail.muttrc
+
+# quick-sync ~/Mail immediately with offlineimap
+macro index Z   "<shell-escape>/usr/bin/offlineimap -q -o<enter>" "sync IMAP"
+
+auto_view text/html
+
+macro pager \cb <pipe-entry>'urlscan'<enter> 'Follow links with urlscan'
