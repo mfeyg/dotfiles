@@ -1,0 +1,3 @@
+set go-=r
+set showtabline=never
+set defsearch=goog
