@@ -26,3 +26,4 @@ alias laptop_screen="xrandr --output VGA1 --off --output LVDS1 --auto"
 alias download_from_xclip='wget $(xclip -o)'
 
 export BROWSER='firefox'
+export EDITOR='vim'
