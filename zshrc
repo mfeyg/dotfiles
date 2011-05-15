@@ -24,6 +24,18 @@ prompt walters
 alias external_display="xrandr --output LVDS1 --off --output VGA1 --auto"
 alias laptop_screen="xrandr --output VGA1 --off --output LVDS1 --auto"
 alias download_from_xclip='wget $(xclip -o)'
+alias hebcal="hebcal -TcCDetroit"
+alias lh="ls --color=always -lasth|less -R"
 
 export BROWSER='firefox'
 export EDITOR='vim'
+
+# ls colors
+alias ls="ls --color=auto"
+eval "$(dircolors)"
+
+# Use vim as a pager
+export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
+    vim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' \
+    -c 'map <SPACE> <C-D>' -c 'map b <C-U>' \
+    -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
