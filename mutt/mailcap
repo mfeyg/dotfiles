@@ -1,4 +1,5 @@
 text/html; w3m -I %{charset} -T text/html; copiousoutput;
 application/pdf; zathura %s
+application/msword; abiword %s
 image/*; feh %s
 audio/mpeg; mpg123 -C %s

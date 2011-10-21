@@ -1,0 +1,1 @@
+/home/mendel/.zlogin

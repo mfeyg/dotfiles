@@ -5,6 +5,7 @@ keysym Control_L = Caps_Lock
 keysym Caps_Lock = Control_L
 add Lock = Caps_Lock
 add Control = Control_L
+
 ! remap Menu key to Control.
 keysym Menu = Control_R
 add Control = Control_R
