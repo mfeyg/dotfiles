@@ -1,1 +1,1 @@
-/home/mendel/.zlogin
+hdate
