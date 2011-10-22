@@ -1,0 +1,2 @@
+setxkbmap -layout "us,us" -variant ",rus" -option "grp:shifts_toggle"
+xmodmap ~/.xmodmaprc
