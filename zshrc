@@ -44,6 +44,8 @@ if [ $UID -ne 0 ]; then
    alias restart='sudo rc.d restart'
    alias start='sudo rc.d start'
    alias stop='sudo rc.d stop'
+   alias reboot='sudo reboot'
+   alias halt='sudo halt'
 fi
 
 export BROWSER='firefox'
