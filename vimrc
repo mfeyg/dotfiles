@@ -19,7 +19,7 @@ set softtabstop=3
 
 let g:clipbrdDefaultReg = '+'
 
-au FileType tex setl tw=80
+au FileType tex setl tw=80 | set nu
 let g:tex_flavor = "latex"
 let g:Tex_DefaultTargetFormat = "pdf"
 let g:Tex_ViewRule_pdf = "zathura"

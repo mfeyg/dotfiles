@@ -1,4 +1,4 @@
 set show_inputbar
-set adjust_open width
-map <C-/> toggle_statusbar
+#set adjust_open width
+#map <C-/> toggle_statusbar
 set show_statusbar 0

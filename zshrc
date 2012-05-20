@@ -19,7 +19,7 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 
 prompt walters
 
-path=( "$HOME/bin" "$path[@]" )
+path=( "$HOME/bin" "$HOME/.cabal/bin" "$path[@]" "$(ruby -rubygems -e "puts Gem.user_dir")/bin" )
 
 alias external_display="xrandr --output LVDS1 --off --output VGA1 --auto"
 alias laptop_screen="xrandr --output VGA1 --off --output LVDS1 --auto"
@@ -33,8 +33,10 @@ alias mpg123="mpg123 -C"
 alias df="df -h"
 alias jplay='mplayer -fs ~/.jd/downloads/*(-om)'
 alias aria=aria2c
+alias update="packer -Syu"
 alias pgoog="ping google.com"
 alias medit='([ -e $(basename $(pwd)).tex ] || (echo Not found && exit 1)) && vim +/maketitle ++1 $(basename $(pwd)).tex'
+alias xm="yi ~/.xmonad/xmonad.hs"
 
 if [ $UID -ne 0 ]; then
    alias netcfg='sudo netcfg2'
@@ -50,7 +52,6 @@ fi
 
 export BROWSER='firefox'
 export EDITOR='vim'
-export PAGER=$HOME/scripts/vimpager.sh
 
 # ls colors
 alias ls="ls --color=auto"
@@ -58,7 +59,8 @@ eval "$(dircolors)"
 
 # custom functions
 random() {  # pick a random line from a file
-  head -$(( $(od -N4 -An -tu /dev/urandom) % ( $( wc -l "$1" | cut -d' ' -f1) + 1 ) )) "$1" | tail -1
+   1=${1-/usr/share/dict/cracklib-small}
+   head -$(( $(od -N4 -An -tu /dev/urandom) % ( $( wc -l "$1" | cut -d' ' -f1) + 1 ) )) "$1" | tail -1
 }
 
 pmount() {  # special arguments to pmount
@@ -87,3 +89,16 @@ END
    cp ~/math/hw.tex "$NAME".tex
    vim -c'norm zR/TITLEdi{l' -cstart "$NAME".tex
 }
+
+rw() {(repeat $1 random) | tr -s \[:space:] \  | awk '{print}'}
+
+cd() {
+   builtin cd "$@"
+   echo "$PWD" > /tmp/mycwd
+}
+export cd
+if [ -e /tmp/mycwd ]; then
+   cd $(cat /tmp/mycwd)
+fi
+
+function say(){ mplayer -user-agent Mozilla "http://translate.google.com/translate_tts? tl=en&q=$(echo $* | sed 's#\ #+#g')" > /dev/null 2>&1 }
