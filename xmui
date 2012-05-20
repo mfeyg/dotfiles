@@ -1,0 +1,29 @@
+#!/bin/bash
+
+FONT='-*-liberation sans-*-r-*-*-17-*-*-*-*-*-*-*'
+FG='#a8a3f7'
+BG='#0b1c25' 
+TFONT='-*-*-medium-r-normal-*-11-*-*-*-*-*-*-*'
+TFG='#aaaaaa'
+TBG="#0b1c25"
+XDIM=~/bin/xdim
+YDIM=~/bin/ydim
+resize() {
+   if ((bpid)); then kill $bpid; fi
+   if ((tpid)); then kill $tpid; fi
+   coproc dzen2 -e - -w $(($1-150)) -h 17 -ta left -bg "$BG" -fg "$FG" -fn "$FONT" & local bpid=$!
+   conky | dzen2 -l 3 -e 'entertitle=uncollapse;leavetitle=collapse;leaveslave=collapse' -h '17' -w '150' -x $(($1-150)) -ta r -sa r -fg $TFG -bg $TBG -fn $TFONT & local tpid=$!
+   ~/.fehbg
+   xdotool key alt+m
+   #echo RESIZING >&${COPROC[1]}
+}
+oxd=
+oyd=
+while read LINE; do
+   xd=$($XDIM)
+   yd=$($YDIM)
+   if [ x$xd != x$oxd ] || [ x$yd != x$oyd ]; then resize $xd; fi
+   oxd=$xd
+   oyd=$yd
+   echo "$LINE" >&${COPROC[1]}
+done
