@@ -14,7 +14,7 @@ resize() {
    coproc dzen2 -e - -w $(($1-150)) -h 17 -ta left -bg "$BG" -fg "$FG" -fn "$FONT" & local bpid=$!
    conky | dzen2 -l 3 -e 'entertitle=uncollapse;leavetitle=collapse;leaveslave=collapse' -h '17' -w '150' -x $(($1-150)) -ta r -sa r -fg $TFG -bg $TBG -fn $TFONT & local tpid=$!
    ~/.fehbg
-   xdotool key alt+m
+   xdotool key alt+n
    #echo RESIZING >&${COPROC[1]}
 }
 oxd=

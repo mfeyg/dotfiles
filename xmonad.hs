@@ -1,8 +1,9 @@
 import XMonad
-import XMonad.Layout.NoBorders
 import XMonad.Layout.Reflect
 import Control.Monad
+import Control.Monad.Instances
 import Data.Maybe
+import Data.List
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
 import XMonad.Hooks.DynamicLog
@@ -13,8 +14,10 @@ import XMonad.Actions.UpdatePointer
 import XMonad.Util.NamedWindows
 import XMonad.Actions.CycleWS
 import Data.Monoid
+import XMonad.Hooks.ManageHelpers
+import XMonad.Util.WorkspaceCompare
 
-myLayout = noBorders $ avoidStruts (tiled ||| Mirror tiled ||| Full)
+myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
  where
     tiled = Tall nmaster delta ratio
     nmaster = 1
@@ -31,7 +34,10 @@ fadeHook ::Rational ->Rational ->X ()
 fadeHook active inactive = fadeOutLogHook $ do
                                 u <- isUnfocused
                                 term <- className =?"URxvt" <||> className =?"dzen"
-                                return $ if u /=term then inactive else active
+                                fs <- isFullscreen
+                                return $ if fs then 1
+                                          else if u /=term then inactive
+                                          else active
 
 myPP h = dzenPP
          { ppOutput = hPutStrLn h
@@ -60,34 +66,39 @@ layoutIcon fg bg x =
                       'B' -> "^fg(" ++ bg ++ ")"
                       _   -> [c]
 
-hiddenWindows = withWindowSet $ fmap (format . map show)
+hiddenWindows = withWindowSet $ liftM (format . map show)
                               . mapM getName
-                              . join
-                              . ap (map (maybe []) [W.up, W.down])
-                              . return
-                              . W.stack
-                              . W.workspace
-                              . W.current
-   where format = fmap (wrap "^fg(#666666)  [[" "]]^fg()") . combine
-         combine (a:b:as) = fmap ((a ++ " || ") ++) (combine (b:as))
-         combine (a:[])   = Just a
-         combine []       = Nothing
+                              . concat
+                              . sequence (map (maybe []) [W.up, W.down])
+                              . W.stack . W.workspace . W.current
+   where format l = guard (not (null l)) >> return
+                     (wrap "^fg(#666666)  [[" "]]^fg()"
+                      . intercalate " || "
+                      $ l )
 
 -- switch to previous workspace when current one is empty
 myEventHook DestroyWindowEvent {} = do
-   empty <- withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
-   when empty (moveTo Prev NonEmptyWS)
+   empty <- isCurrWSEmpty
+   when empty (doTo Next NonEmptyWS (return tail) (windows . W.greedyView))
    return (All True)
 
 myEventHook _ = return (All True)
 
+isCurrWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
+
+myManageHook = isFullscreen --> (doFullFloat <+> doShiftEmpty)
+
+doShiftEmpty = ask >>= \w -> liftX $ do
+   i <- findWorkspace getSortByIndex Next EmptyWS 1
+   return (Endo (W.greedyView i) <+> Endo (W.shiftWin i w))
+
 myConfig = defaultConfig
            { terminal    = "urxvtc"
            , modMask     = mod1Mask
-           , borderWidth = 1
+           , borderWidth = 0
            , focusedBorderColor = "blue"
            , layoutHook  = myLayout
-           , manageHook  = manageDocks <+> manageHook defaultConfig
+           , manageHook  = myManageHook <+> manageDocks <+> manageHook defaultConfig
            , startupHook = refresh
            , handleEventHook = myEventHook
            } `additionalKeysP` myKeyBindings
@@ -102,4 +113,6 @@ myKeyBindings =
   , ("M-S-x", spawn "ps -u mendel -o comm | sort | uniq | dmenu | xargs pkill -n -9") 
   , ("M-q",   spawn "killall dzen2; xmonad --recompile && xmonad --restart")
   , ("M-<Backspace>", sendMessage ToggleStruts)
+  , ("M-S-\\", isCurrWSEmpty >>= (when . not) `flip` moveTo Next EmptyWS
+                >> asks (terminal . config) >>= spawn)
   ]

@@ -23,3 +23,8 @@ au FileType tex setl tw=80 | set nu
 let g:tex_flavor = "latex"
 let g:Tex_DefaultTargetFormat = "pdf"
 let g:Tex_ViewRule_pdf = "zathura"
+
+autocmd FileType haskell nmap <C-c><C-l> :GhciRange<CR>
+autocmd FileType haskell vmap <C-c><C-l> :GhciRange<CR>
+autocmd FileType haskell nmap <C-c><C-f> :GhciFile<CR>
+autocmd FileType haskell nmap <C-c><C-r> :GhciReload<CR>

@@ -36,7 +36,8 @@ alias aria=aria2c
 alias update="packer -Syu"
 alias pgoog="ping google.com"
 alias medit='([ -e $(basename $(pwd)).tex ] || (echo Not found && exit 1)) && vim +/maketitle ++1 $(basename $(pwd)).tex'
-alias xm="yi ~/.xmonad/xmonad.hs"
+alias xm="vim ~/.xmonad/xmonad.hs"
+alias feh="feh -F"
 
 if [ $UID -ne 0 ]; then
    alias netcfg='sudo netcfg2'
