@@ -49,7 +49,7 @@ myPP h = dzenPP
          , ppTitle  = wrap "^ca(1,xdotool key alt+Tab)" "^ca()" .
                       dzenColor "black" "#aaaaaa" . ( ++ " ") .
                       dzenEscape
-         , ppExtras = [hiddenWindows]
+         , ppExtras = [inactiveWindows]
          }
   where clickable f i =
          wrap ("^ca(1,xdotool key alt+" ++ i ++ ")") "^ca()" $ f i
@@ -66,7 +66,7 @@ layoutIcon fg bg x =
                       'B' -> "^fg(" ++ bg ++ ")"
                       _   -> [c]
 
-hiddenWindows = withWindowSet $ liftM (format . map show)
+inactiveWindows = withWindowSet $ liftM (format . map show)
                               . mapM getName
                               . concat
                               . sequence (map (maybe []) [W.up, W.down])
@@ -76,15 +76,15 @@ hiddenWindows = withWindowSet $ liftM (format . map show)
                       . intercalate " || "
                       $ l )
 
--- switch to previous workspace when current one is empty
+isCurrWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
+
+-- switch to previous active workspace when current one is empty
 myEventHook DestroyWindowEvent {} = do
    empty <- isCurrWSEmpty
    when empty (doTo Next NonEmptyWS (return tail) (windows . W.greedyView))
    return (All True)
 
 myEventHook _ = return (All True)
-
-isCurrWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
 
 myManageHook = isFullscreen --> (doFullFloat <+> doShiftEmpty)
 
