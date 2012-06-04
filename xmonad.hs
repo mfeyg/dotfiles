@@ -76,12 +76,16 @@ inactiveWindows = withWindowSet $ liftM (format . map show)
                       . intercalate " || "
                       $ l )
 
-isCurrWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
+isCurrentWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
 
 -- switch to previous active workspace when current one is empty
 myEventHook DestroyWindowEvent {} = do
-   empty <- isCurrWSEmpty
+   empty <- isCurrentWSEmpty
    when empty (doTo Next NonEmptyWS (return tail) (windows . W.greedyView))
+   stillEmpty <- isCurrentWSEmpty -- all workspaces empty; switch to first one
+   when stillEmpty $ do
+      byIndex <- getSortByIndex
+      withWindowSet (windows . W.greedyView . W.tag . head . byIndex . W.workspaces)
    return (All True)
 
 myEventHook _ = return (All True)
@@ -113,6 +117,6 @@ myKeyBindings =
   , ("M-S-x", spawn "ps -u mendel -o comm | sort | uniq | dmenu | xargs pkill -n -9") 
   , ("M-q",   spawn "killall dzen2; xmonad --recompile && xmonad --restart")
   , ("M-<Backspace>", sendMessage ToggleStruts)
-  , ("M-S-\\", isCurrWSEmpty >>= (when . not) `flip` moveTo Next EmptyWS
+  , ("M-S-\\", isCurrentWSEmpty >>= (when . not) `flip` moveTo Next EmptyWS
                 >> asks (terminal . config) >>= spawn)
   ]
