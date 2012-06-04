@@ -19,6 +19,9 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 
 prompt walters
 
+precmd () { print -Pn "\e]0;%n@%m: %~\a" }
+preexec () { print -Pn "\e]0;%n@%m: $1\a" }
+
 path=( "$HOME/bin" "$HOME/.cabal/bin" "$path[@]" "$(ruby -rubygems -e "puts Gem.user_dir")/bin" )
 
 alias external_display="xrandr --output LVDS1 --off --output VGA1 --auto"

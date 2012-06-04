@@ -46,8 +46,8 @@ myPP h = dzenPP
          , ppLayout = wrap "^ca(1,xdotool key alt+space)" "^ca()" .
                       dzenColor "black" "#aaaaaa" .
                       layoutIcon "#666666" "#aaaaaa"
-         , ppTitle  = wrap "^ca(1,xdotool key alt+Tab)" "^ca()" .
-                      dzenColor "black" "#aaaaaa" . ( ++ " ") .
+         , ppTitle  = wrap "^ca(1,xdotool key alt+j)" "^ca()" .
+                      dzenColor "black" "#aaaaaa" . wrap "" " " .
                       dzenEscape
          , ppExtras = [inactiveWindows]
          }
@@ -78,7 +78,9 @@ inactiveWindows = withWindowSet $ liftM (format . map show)
 
 isCurrentWSEmpty = withWindowSet (return . isNothing . W.stack . W.workspace . W.current)
 
--- switch to previous active workspace when current one is empty
+-- Switch to previous active workspace when current one is empty.
+-- ISSUE: Don't know how to check whether destroyed window is from
+--        current workspace.
 myEventHook DestroyWindowEvent {} = do
    empty <- isCurrentWSEmpty
    when empty (doTo Next NonEmptyWS (return tail) (windows . W.greedyView))
@@ -119,4 +121,5 @@ myKeyBindings =
   , ("M-<Backspace>", sendMessage ToggleStruts)
   , ("M-S-\\", isCurrentWSEmpty >>= (when . not) `flip` moveTo Next EmptyWS
                 >> asks (terminal . config) >>= spawn)
+  , ("M-<Tab>", moveTo Next NonEmptyWS)
   ]
